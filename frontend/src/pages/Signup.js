@@ -2,25 +2,48 @@ import { Link } from "react-router-dom"
 import { useState } from "react";
 
 function Signup() {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [firstname, setFirstName] = useState("");
-    const [lastname, setLastName] = useState("");
+    const [email, setEmail] = useState("")
+    const [password, setPasswod] = useState("");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [err, setError] = useState(null)
+    const [errorMessage, setErrorMessage] = useState("")
+
+    const onFirstNameChange = (e) => {
+        setFirstName(e.target.value)
+    }
+    const onLastNameChange = (e) => {
+        setLastName(e.target.value)
+    }
+    const onPasswordChange = (e) => {
+        setPasswod(e.target.value)
+    }
+
     const onEmailChange = (e) => {
         setEmail(e.target.value)
     }
-    const onPasswordChange = (e) => {
-        setPassword(e.target.value)
-    }
-    const onFirstnameChange = (e) => {
-        setFirstName(e.target.value)
-    }
-    const onLastnameChange = (e) => {
-        setLastName(e.target.value)
-    }
+
     const signup = (e) => {
         e.preventDefault();
-        console.log(email, password, firstname, lastname)
+        console.log(email, password, firstName, lastName)
+        fetch("http://localhost:5000/user/signup",
+            {
+                method: "POST", body: JSON.stringify({ email, password, firstName, lastName }),
+                headers: { 'Content-Type': "application/json" }
+            })
+            .then(function (res) {
+                console.log(res.status)
+                if (res.status !== 200) {
+                    console.log(res)
+                    setError(true)
+                    return res.json()
+                } else {
+                    return res.json()
+                }
+
+            }).then(function (result) {
+                setErrorMessage(result.message)
+            })
     }
     return (
         <div className="login-form-box">
@@ -30,26 +53,26 @@ function Signup() {
                 </div>
                 <div className="form-group mt-3">
                     <label>First Name</label>
-                    <input type="text" className="form-control mt-1" id="firstname" placeholder="Enter first name" value={firstname} onChange={(e) => onFirstnameChange(e)} />
+                    <input type="text" className="form-control mt-1" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter First name" value={firstName} onChange={(e) => onFirstNameChange(e)} />
                 </div>
                 <div className="form-group mt-3">
                     <label>Last Name</label>
-                    <input type="text" className="form-control mt-1" id="lastname" placeholder="Enter last name" value={lastname} onChange={(e) => onLastnameChange(e)} />
+                    <input type="text" className="form-control mt-1" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter last name" value={lastName} onChange={(e) => onLastNameChange(e)} />
                 </div>
                 <div className="form-group mt-3">
                     <label>Email address</label>
-                    <input type="email" className="form-control mt-1" id="exampleInputEmail1" placeholder="Enter email" value={email} onChange={(e) => onEmailChange(e)} />
+                    <input type="email" className="form-control mt-1" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email" value={email} onChange={(e) => onEmailChange(e)} />
                 </div>
                 <div className="form-group mt-3">
-                    <label className="form-label">Password</label>
-                    <input type="password" className="form-control mt-1" id="exampleInputPassword1" placeholder="Enter password" value={password} onChange={(e) => onPasswordChange(e)} />
+                    <label for="exampleInputPassword1">Password</label>
+                    <input type="password" className="form-control mt-1" id="exampleInputPassword1" placeholder="Password" value={password} onChange={(e) => onPasswordChange(e)} />
                 </div>
                 <button type="submit" className="btn btn-primary mt-3">Submit</button>
-                <div>
-                    <Link>Already have an account <span className="link-color"><Link to="/login">Login</Link></span></Link>
-                </div>
+                <div><Link>Already have an account <span className="link-color"><Link to="/login">Login</Link></span></Link></div>
             </form>
-
+            {err && <div class="alert alert-danger" role="alert" style={{ "position": "fixed", "top": "0px" }}>
+                {errorMessage}
+            </div>}
         </div>
     )
 }
